@@ -1,6 +1,9 @@
 package spp;
 
+import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
 
 public class Google
@@ -26,6 +29,11 @@ public class Google
 	{
 		System.out.println ("Running test...");
 		wdriver.get ("http://www.google.com");
+		
+		WebElement searchBar = wdriver.findElement (By.name ("q"));
+		searchBar.sendKeys("Les Paul Guitars" + Keys.RETURN);
+		//WebElement searchButton = wdriver.findElement (By.name ("btnK"));
+		//searchButton.click ();
 		
 		waitaFewSeconds (2);
 	}
