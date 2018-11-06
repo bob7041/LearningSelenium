@@ -7,6 +7,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
 
 public class Google
 {
@@ -14,17 +15,36 @@ public class Google
 	
 	public static void main (String [] args)
 	{
+		if (args.length != 1)
+		{
+			System.out.println ("Usage: Google <browser> where f = Firefox, c = Chrome");
+			System.exit (-1);
+		}
 		Google testme = new Google ();
-		testme.setup ();
+		testme.setup (args [0]);
 		testme.runtest ();
 		testme.cleanup ();
 	}
 	
-	public void setup ()
+	public void setup (String browserName)
 	{
-		System.out.println ("Setting up...");
-		System.setProperty ("webdriver.gecko.driver", "C:\\Program Files\\Java\\drivers\\geckodriver-v0.23.0-win64\\geckodriver.exe");
-		wdriver = new FirefoxDriver ();
+		System.out.print ("Setting up ");
+		if (browserName.equals ("c"))
+		{
+			System.out.println ("Chrome browser...");
+			chrome ();
+		}
+		else if (browserName.equals ("f"))
+		{
+			System.out.println ("Firefox browser...");
+			firefox ();
+		}
+		else
+		{
+			System.out.println ("Unsupported browser - aborting");
+			System.exit (-2);
+		}
+		
 		wdriver.manage ().timeouts ().implicitlyWait (10, TimeUnit.SECONDS);
 	}
 	
@@ -35,13 +55,13 @@ public class Google
 		
 		// search for something
 		WebElement searchBar = wdriver.findElement (By.name ("q"));
-		searchBar.sendKeys("Les Paul Guitars" + Keys.RETURN);
+		searchBar.sendKeys ("Les Paul Guitars" + Keys.RETURN);
 		
 		// select a menu option
 		WebElement menuButton = wdriver.findElement (By.linkText ("More"));
 		Actions builder = new Actions (wdriver);
 		builder.moveToElement (menuButton).click ().perform ();
-		wdriver.findElement(By.linkText ("Books")).click ();
+		wdriver.findElement (By.linkText ("Books")).click ();
 		
 		waitaFewSeconds (2);    // just so we can enjoy the results of our hard work!
 	}
@@ -51,6 +71,30 @@ public class Google
 		System.out.println ("Bye bye!");
 		if (wdriver != null)
 			wdriver.quit ();
+	}
+	
+	// helper methods
+	public void firefox ()
+	{
+		System.setProperty ("webdriver.gecko.driver", "C:\\Program Files\\Java\\drivers\\geckodriver-v0.23.0-win64\\geckodriver.exe");
+		wdriver = new FirefoxDriver ();
+		if (wdriver == null)
+		{
+			System.out.println("Failed to load gecko driver - aborting");
+			System.exit (-3);
+		}
+	}
+	
+	// NOTE: to use Chrome, manually start chromedrive.exe from command line
+	public void chrome ()
+	{
+		System.setProperty ("webdriver.chrome.driver", "C:\\Program Files\\Java\\drivers\\chromedriver\\chromedriver.exe");
+		wdriver = new ChromeDriver ();  
+		if (wdriver == null)
+		{
+			System.out.println("Failed to load Chrome driver - aborting");
+			System.exit (-4);
+		}  
 	}
 	
 	public void waitaFewSeconds (int secs) 
